@@ -1,7 +1,9 @@
-ARG PG_VERSION=17
+ARG VERSION=pg17
 
-FROM pgvector/pgvector:PG${PG_VERSION}
-ADD upgrade_postgres /usr/local/bin/upgrade_postgres
-ADD run_postgres /usr/local/bin/run_postgres
-# TODO: change entrypoint
-ENTRYPOINT run_postgres
+FROM pgvector/pgvector:${VERSION}
+
+ADD install_old_postgres.sh /usr/local/bin/install_old_postgres.sh
+ADD upgrade_postgres.sh /usr/local/bin/upgrade_postgres.sh
+ADD run_postgres.sh /usr/local/bin/run_postgres.sh
+ENTRYPOINT ["run_postgres.sh"]
+CMD ["postgres"]

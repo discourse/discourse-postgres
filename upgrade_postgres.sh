@@ -1,4 +1,17 @@
 #!/bin/bash
+set -Eeuo pipefail
+if [ ! -f /shared/postgres_data/PG_VERSION ]; then
+    exit 0
+fi
+
+source /usr/local/bin/docker-entrypoint.sh
+if [ "$(id -u)" = '0' ]; then
+	  # then restart script as postgres user
+	  exec gosu postgres "$BASH_SOURCE" "$@"
+fi
+docker_setup_env
+docker_create_db_directories
+
 PG_MAJOR_OLD=`cat /shared/postgres_data/PG_VERSION`
 PG_MAJOR_NEW=`postgres --version | sed -rn 's/^[^0-9]*+([0-9]++).*/\1/p'`
 
@@ -25,18 +38,18 @@ if [ ! "${PG_MAJOR_NEW}" = "$PG_MAJOR_OLD" ]; then
   fi
 
   rm -fr /shared/postgres_data_new
-  install -d -m 0755 -o postgres -g postgres /shared/postgres_data_new && sudo -u postgres /usr/lib/postgresql/${PG_MAJOR_NEW}/bin/initdb -D /shared/postgres_data_new || exit 0
-  apt-get update
-  apt-get install -y postgresql-${PG_MAJOR_OLD} postgresql-${PG_MAJOR_OLD}-pgvector
-  chown -R postgres:postgres /var/lib/postgresql/${PG_MAJOR_NEW}
-  /etc/init.d/postgresql stop
-  rm -fr /shared/postgres_data/postmaster.pid
+  PGDATA=/shared/postgres_data_new
+	docker_init_database_dir
+	pg_setup_hba_conf "$@"
+  #chown -R postgres:postgres /var/lib/postgresql/${PG_MAJOR_NEW}
+  #/etc/init.d/postgresql stop
+  #rm -fr /shared/postgres_data/postmaster.pid
   cd ~postgres
-  cp -pr /etc/postgresql/${PG_MAJOR_OLD}/main/* /shared/postgres_data
+  #cp -pr /etc/postgresql/${PG_MAJOR_OLD}/main/* /shared/postgres_data
   echo  >> /shared/postgres_data/postgresql.conf
   echo "data_directory = '/shared/postgres_data'" >> /shared/postgres_data/postgresql.conf
   SUCCESS=true
-  sudo -u postgres /usr/lib/postgresql/${PG_MAJOR_NEW}/bin/pg_upgrade -d /shared/postgres_data -D /shared/postgres_data_new -b /usr/lib/postgresql/${PG_MAJOR_OLD}/bin -B /usr/lib/postgresql/${PG_MAJOR_NEW}/bin || SUCCESS=false
+  /usr/lib/postgresql/${PG_MAJOR_NEW}/bin/pg_upgrade --username="$POSTGRES_USER" -d /shared/postgres_data -D /shared/postgres_data_new -b /usr/lib/postgresql/${PG_MAJOR_OLD}/bin -B /usr/lib/postgresql/${PG_MAJOR_NEW}/bin || SUCCESS=false
 
   if [[ "$SUCCESS" == 'false' ]]; then
     echo -------------------------------------------------------------------------------------

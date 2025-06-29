@@ -1,2 +1,5 @@
 #!/bin/bash
-upgrade_postgres.sh && docker-entrypoint.sh
+set -Ee
+install_old_postgres.sh "$@"
+upgrade_postgres.sh "$@"
+exec docker-entrypoint.sh "$@"
