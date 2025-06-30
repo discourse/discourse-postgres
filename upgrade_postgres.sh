@@ -5,15 +5,20 @@ if [ ! -f /shared/postgres_data/PG_VERSION ]; then
 fi
 
 source /usr/local/bin/docker-entrypoint.sh
-if [ "$(id -u)" = '0' ]; then
-	  # then restart script as postgres user
-	  exec gosu postgres "$BASH_SOURCE" "$@"
-fi
 docker_setup_env
 docker_create_db_directories
 
 PG_MAJOR_OLD=`cat /shared/postgres_data/PG_VERSION`
 PG_MAJOR_NEW=`postgres --version | sed -rn 's/^[^0-9]*+([0-9]++).*/\1/p'`
+
+if [ "$(id -u)" = '0' ]; then
+	  # install old postgres then restart script as postgres user
+    if [ ! "${PG_MAJOR_NEW}" = "$PG_MAJOR_OLD" ]; then
+        apt-get update
+        apt-get install -y postgresql-${PG_MAJOR_OLD} postgresql-${PG_MAJOR_OLD}-pgvector
+    fi
+	  exec gosu postgres "$BASH_SOURCE" "$@"
+fi
 
 if [ ! "${PG_MAJOR_NEW}" = "$PG_MAJOR_OLD" ]; then
   echo Upgrading PostgreSQL from version ${PG_MAJOR_OLD} to ${PG_MAJOR_NEW}
