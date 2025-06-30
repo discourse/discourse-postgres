@@ -1,19 +1,27 @@
 #!/bin/bash
 set -Eeuo pipefail
-if [ ! -f /shared/postgres_data/PG_VERSION ]; then
-    exit 0
-fi
+# exit early if no data dirs exist
+find /var/lib/postgresql -name PG_VERSION -maxdepth 3 -type f | grep . > /dev/null || exit 0
 
 source /usr/local/bin/docker-entrypoint.sh
 docker_setup_env
 docker_create_db_directories
 
-PG_MAJOR_OLD=`cat /shared/postgres_data/PG_VERSION`
+# assume we're upgrading from latest found pg major dir
+# data dir/cluster name is /docker, so data is expected at /var/lib/postgres/{version}/docker/*
+# and the entire cluster mount is expected to go to /var/lib/postgresql
+# per https://github.com/docker-library/postgres/pull/1259
+PG_MAJOR_OLD=`find /var/lib/postgresql -name PG_VERSION -maxdepth 3 -type f -exec cat {} \; | sort -n | tail -n 1`
 PG_MAJOR_NEW=`postgres --version | sed -rn 's/^[^0-9]*+([0-9]++).*/\1/p'`
+export PGDATAOLD=/var/lib/postgresql/${PG_MAJOR_OLD}/docker
+export PGDATANEW=${PGDATA}
+export PGBINOLD=/usr/lib/postgresql/${PG_MAJOR_OLD}/bin
+export PGBINNEW=/usr/lib/postgresql/${PG_MAJOR_NEW}/bin
 
 if [ "$(id -u)" = '0' ]; then
 	  # install old postgres then restart script as postgres user
     if [ ! "${PG_MAJOR_NEW}" = "$PG_MAJOR_OLD" ]; then
+        echo "Installing PostgreSQL version ${PG_MAJOR_OLD} for upgrade.."
         apt-get update
         apt-get install -y postgresql-${PG_MAJOR_OLD} postgresql-${PG_MAJOR_OLD}-pgvector
     fi
@@ -22,8 +30,8 @@ fi
 
 if [ ! "${PG_MAJOR_NEW}" = "$PG_MAJOR_OLD" ]; then
   echo Upgrading PostgreSQL from version ${PG_MAJOR_OLD} to ${PG_MAJOR_NEW}
-  free_disk=$(df -P -B1 /shared | tail -n 1 | awk '{print $4}')
-  required=$(($(du -sb /shared/postgres_data | awk '{print $1}') * 2))
+  free_disk=$(df -P -B1 /var/lib/postgresql | tail -n 1 | awk '{print $4}')
+  required=$(($(du -sb /var/lib/postgresql/${PG_MAJOR_OLD}/docker | awk '{print $1}') * 2))
 
   if [ "$free_disk" -lt "$required" ]; then
     echo
@@ -38,23 +46,11 @@ if [ ! "${PG_MAJOR_NEW}" = "$PG_MAJOR_OLD" ]; then
     exit 1
   fi
 
-  if [ -d /shared/postgres_data_old ]; then
-    mv /shared/postgres_data_old /shared/postgres_data_older
-  fi
-
-  rm -fr /shared/postgres_data_new
-  PGDATA=/shared/postgres_data_new
 	docker_init_database_dir
 	pg_setup_hba_conf "$@"
-  #chown -R postgres:postgres /var/lib/postgresql/${PG_MAJOR_NEW}
-  #/etc/init.d/postgresql stop
-  #rm -fr /shared/postgres_data/postmaster.pid
-  cd ~postgres
-  #cp -pr /etc/postgresql/${PG_MAJOR_OLD}/main/* /shared/postgres_data
-  echo  >> /shared/postgres_data/postgresql.conf
-  echo "data_directory = '/shared/postgres_data'" >> /shared/postgres_data/postgresql.conf
+  cd /var/run/postgresql
   SUCCESS=true
-  /usr/lib/postgresql/${PG_MAJOR_NEW}/bin/pg_upgrade --username="$POSTGRES_USER" -d /shared/postgres_data -D /shared/postgres_data_new -b /usr/lib/postgresql/${PG_MAJOR_OLD}/bin -B /usr/lib/postgresql/${PG_MAJOR_NEW}/bin || SUCCESS=false
+  ${PGBINNEW}/pg_upgrade --username="$POSTGRES_USER" || SUCCESS=false
 
   if [[ "$SUCCESS" == 'false' ]]; then
     echo -------------------------------------------------------------------------------------
@@ -67,13 +63,10 @@ if [ ! "${PG_MAJOR_NEW}" = "$PG_MAJOR_OLD" ]; then
     exit 1
   fi
 
-  mv /shared/postgres_data /shared/postgres_data_old
-  mv /shared/postgres_data_new /shared/postgres_data
-
   echo -------------------------------------------------------------------------------------
   echo UPGRADE OF POSTGRES COMPLETE
   echo
-  echo Old ${PG_MAJOR_OLD} database is stored at /shared/postgres_data_old
+  echo Old ${PG_MAJOR_OLD} database is stored at /shared/postgres/${PG_MAJOR_OLD}/docker
   echo
   echo To complete the upgrade, rebuild again using:
   echo

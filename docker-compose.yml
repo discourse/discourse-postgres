@@ -14,12 +14,12 @@ services:
   db:
     image: local_discourse/test_pg
     volumes:
-      - ./shared/test-pg/postgres_data:/var/lib/postgresql/data
-      - ./shared/test-pg:/shared
+      - ./shared/test-pg:/var/lib/postgresql
     environment:
       POSTGRES_USER: discourse
       POSTGRES_PASSWORD: SOME_SECRET
       POSTGRES_DB: discourse
+      PGDATA: /var/lib/postgresql/17/docker
   web:
     image: local_discourse/web_only
     links:
