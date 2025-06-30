@@ -12,3 +12,8 @@ some notes:
 * postgres image is in the process of using /var/lib/postgresql/{version}/docker as default data dirs (from /var/lib/postgresql/data)
 * /var/lib/postgresql/data up until pg version 17 was declared a volume, so the directory just got created from whatever the parent mount was for parent volumes.
 * I do not understand why postmaster.pid was deleted, nor why data_directory was being printed to postgresql.conf pre-upgrade.
+
+See also https://github.com/docker-library/postgres/pull/1259
+for recent work on data dirs for postgres image (will land in 18)
+for now we need an explicit PGDATA on the image
+and a mount on to `/var/lib/postgresql` rather than `/var/lib/postgresql/data`...
