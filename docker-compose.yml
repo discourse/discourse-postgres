@@ -15,6 +15,7 @@ services:
     image: local_discourse/test_pg
     volumes:
       - ./shared/test-pg:/var/lib/postgresql
+      - ./shared/test-pg/data:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: discourse
       POSTGRES_PASSWORD: SOME_SECRET
