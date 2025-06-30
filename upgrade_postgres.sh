@@ -8,12 +8,15 @@ docker_setup_env
 docker_create_db_directories
 
 # assume we're upgrading from latest found pg major dir
-# data dir/cluster name is /docker, so data is expected at /var/lib/postgres/{version}/docker/*
 # and the entire cluster mount is expected to go to /var/lib/postgresql
 # per https://github.com/docker-library/postgres/pull/1259
-PG_MAJOR_OLD=`find /var/lib/postgresql -name PG_VERSION -maxdepth 3 -type f -exec cat {} \; | sort -n | tail -n 1`
-PG_MAJOR_NEW=`postgres --version | sed -rn 's/^[^0-9]*+([0-9]++).*/\1/p'`
-export PGDATAOLD=/var/lib/postgresql/${PG_MAJOR_OLD}/docker
+
+PG_MAJOR_OLD=$(find /var/lib/postgresql -name PG_VERSION -maxdepth 3 -type f -exec cat {} \; | sort -n | tail -n 1)
+PG_MAJOR_NEW=$(postgres --version | sed -rn 's/^[^0-9]*+([0-9]++).*/\1/p')
+
+# data dir/cluster name is /docker in newer versions, but data elsewhere. figure out /var/lib/postgres/{version}/{cluster}/*
+PG_MAJOR_OLD_CLUSTER=$(ls -1 /var/lib/postgresql/${PG_MAJOR_OLD} | tail -n 1)
+export PGDATAOLD=/var/lib/postgresql/${PG_MAJOR_OLD}/${PG_MAJOR_OLD_CLUSTER}
 export PGDATANEW=${PGDATA}
 export PGBINOLD=/usr/lib/postgresql/${PG_MAJOR_OLD}/bin
 export PGBINNEW=/usr/lib/postgresql/${PG_MAJOR_NEW}/bin
@@ -31,7 +34,7 @@ fi
 if [ ! "${PG_MAJOR_NEW}" = "$PG_MAJOR_OLD" ]; then
   echo Upgrading PostgreSQL from version ${PG_MAJOR_OLD} to ${PG_MAJOR_NEW}
   free_disk=$(df -P -B1 /var/lib/postgresql | tail -n 1 | awk '{print $4}')
-  required=$(($(du -sb /var/lib/postgresql/${PG_MAJOR_OLD}/docker | awk '{print $1}') * 2))
+  required=$(($(du -sb /var/lib/postgresql/${PG_MAJOR_OLD}/${PG_MAJOR_OLD_CLUSTER} | awk '{print $1}') * 2))
 
   if [ "$free_disk" -lt "$required" ]; then
     echo
@@ -39,9 +42,6 @@ if [ ! "${PG_MAJOR_NEW}" = "$PG_MAJOR_OLD" ]; then
     echo "WARNING: Upgrading PostgreSQL would require an additional $(numfmt --to=si $(($required - $free_disk))) of disk space"
     echo "Please free up some space, or expand your disk, before continuing."
     echo
-    echo 'To avoid upgrading change "templates/postgres.template.yml" TO "templates/postgres.13.template.yml" in containers/app.yml'
-    echo
-    echo 'You can run "./launcher start app" to restart your app in the meanwhile.'
     echo -------------------------------------------------------------------------------------
     exit 1
   fi
@@ -56,22 +56,10 @@ if [ ! "${PG_MAJOR_NEW}" = "$PG_MAJOR_OLD" ]; then
     echo -------------------------------------------------------------------------------------
     echo UPGRADE OF POSTGRES FAILED
     echo
-    echo Please visit https://meta.discourse.org/t/postgresql-15-update/349515 for support.
-    echo
-    echo You can run "./launcher start app" to restart your app in the meanwhile
     echo -------------------------------------------------------------------------------------
     exit 1
   fi
 
-  echo -------------------------------------------------------------------------------------
-  echo UPGRADE OF POSTGRES COMPLETE
-  echo
-  echo Old ${PG_MAJOR_OLD} database is stored at /shared/postgres/${PG_MAJOR_OLD}/docker
-  echo
-  echo To complete the upgrade, rebuild again using:
-  echo
-  echo     ./launcher rebuild app
-  echo -------------------------------------------------------------------------------------
-  # Magic exit status to denote no failure
-  exit 77
+  echo "PostgreSQL version ${PG_MAJOR_OLD} upgrade complete"
+  exit 0
 fi
