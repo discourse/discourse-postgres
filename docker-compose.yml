@@ -18,11 +18,7 @@ services:
       - ./shared/test-pg:/var/lib/postgresql
       - ./shared/test-pg/data:/var/lib/postgresql/data
     environment:
-      POSTGRES_PASSWORD: SOME_SUPER_SECRET
-      POSTGRES_USER_NOT_SUPER: discourse
-      POSTGRES_PASSWORD_NOT_SUPER: SOME_SECRET
-      POSTGRES_DB: discourse
-      PGDATA: /var/lib/postgresql/17/docker
+      DB_PASSWORD: SOME_SECRET
 
 # old style 2-container data
 #  db:

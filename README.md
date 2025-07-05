@@ -33,8 +33,15 @@ also theres everything done in create_db file:
 * database encoding
 
 bootstrap_db.sh creates the extensions to the db, and adds the owning (non super) user with:
-POSTGRES_USER_NOT_SUPER
-POSTGRES_PASSWORD_NOT_SUPER
+DB_USER
+DB_PASSWORD
 
 POSTGRES_USER defaults to postgres.
-POSTGRES_PASSWORD on the other hand needs to be set currently, even though we're connecting on a separate user.
+POSTGRES_PASSWORD leave unset
+
+DB_USER defaults to discourse
+DB_PASSWORD needs to be set
+
+The user and password gets created/set on every build in base Discourse image, whereas on postgres images, they do not.
+
+POSTGRES_DB defaults to discourse
