@@ -52,6 +52,9 @@ docker_init_database_dir
 pg_setup_hba_conf "$@"
 cd /var/run/postgresql
 SUCCESS=true
+
+rm -fr ${PGDATAOLD}/postmaster.pid
+rm -fr ${PGDATAOLD}/postmaster.opts
 ${PGBINNEW}/pg_upgrade --username="$POSTGRES_USER" || SUCCESS=false
 
 if [[ "$SUCCESS" == 'false' ]]; then
