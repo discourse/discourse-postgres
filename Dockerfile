@@ -1,6 +1,7 @@
 ARG VERSION=17
 
 FROM pgvector/pgvector:pg${VERSION}
+ARG VERSION
 
 RUN apt-get update && \
 	apt-mark hold locales && \
