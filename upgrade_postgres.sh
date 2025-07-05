@@ -12,7 +12,7 @@ docker_create_db_directories
 # per https://github.com/docker-library/postgres/pull/1259
 
 # Of the form `{PGDATAOLD} {PG_MAJOR_OLD}` - saves the newest 'old' version found
-PGDATAOLD_AND_PG_MAJOR_OLD=$(find /var/lib/postgresql -name PG_VERSION -maxdepth 3 -type f | xargs -I % sh -c 'printf "% "; cat %' | sort -nk2,2 | tail -n1)
+PGDATAOLD_AND_PG_MAJOR_OLD=$(find /var/lib/postgresql -maxdepth 3 -type f -name PG_VERSION | xargs -I % sh -c 'printf "% "; cat %' | sort -nk2,2 | tail -n1)
 PG_MAJOR_OLD=$(printf $PGDATAOLD_AND_PG_MAJOR_OLD | awk '{print $2}')
 PG_MAJOR_NEW=$(postgres --version | sed -rn 's/^[^0-9]*+([0-9]++).*/\1/p')
 
