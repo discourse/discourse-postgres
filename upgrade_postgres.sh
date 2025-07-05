@@ -36,6 +36,8 @@ if [ "$(id -u)" = '0' ]; then
     echo "Installing PostgreSQL version ${PG_MAJOR_OLD} for upgrade.."
     apt-get update
     apt-get install -y postgresql-${PG_MAJOR_OLD} postgresql-${PG_MAJOR_OLD}-pgvector
+    echo "Fixing permissions in ${PGDATAOLD}..."
+		find "$PGDATAOLD" \! -user postgres -exec chown postgres '{}' +
 	  exec gosu postgres "$BASH_SOURCE" "$@"
 fi
 
