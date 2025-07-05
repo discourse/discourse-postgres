@@ -13,7 +13,7 @@ docker_create_db_directories
 
 # Of the form `{PGDATAOLD} {PG_MAJOR_OLD}` - saves the newest 'old' version found
 PGDATAOLD_AND_PG_MAJOR_OLD=$(find /var/lib/postgresql -maxdepth 3 -type f -name PG_VERSION | xargs -I % sh -c 'printf "% "; cat %' | sort -nk2,2 | tail -n1)
-PG_MAJOR_OLD=$(printf $PGDATAOLD_AND_PG_MAJOR_OLD | awk '{print $2}')
+PG_MAJOR_OLD=$(echo $PGDATAOLD_AND_PG_MAJOR_OLD | awk '{print $2}')
 PG_MAJOR_NEW=$(postgres --version | sed -rn 's/^[^0-9]*+([0-9]++).*/\1/p')
 
 # exit if pg major cluster exists
@@ -26,7 +26,7 @@ if [ "${PG_MAJOR_NEW}" -lt "$PG_MAJOR_OLD" ]; then
     exit 1
 fi
 
-export PGDATAOLD=$(printf $PGDATAOLD_AND_PG_MAJOR_OLD | awk '{print $1}')
+export PGDATAOLD=$(echo $PGDATAOLD_AND_PG_MAJOR_OLD | awk '{print $1}')
 export PGDATANEW=${PGDATA}
 export PGBINOLD=/usr/lib/postgresql/${PG_MAJOR_OLD}/bin
 export PGBINNEW=/usr/lib/postgresql/${PG_MAJOR_NEW}/bin
