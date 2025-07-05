@@ -8,6 +8,7 @@ services:
     image: redis
     volumes:
       - ./shared/test-redis:/data
+
   # separate db instance
   # migrate to separated postgres data
   #https://github.com/docker-library/postgres/pull/1259
@@ -17,10 +18,22 @@ services:
       - ./shared/test-pg:/var/lib/postgresql
       - ./shared/test-pg/data:/var/lib/postgresql/data
     environment:
-      POSTGRES_USER: discourse
-      POSTGRES_PASSWORD: SOME_SECRET
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: SOME_SUPER_SECRET
+      POSTGRES_USER_NOT_SUPER: discourse
+      POSTGRES_PASSWORD_NOT_SUPER: SOME_SECRET
       POSTGRES_DB: discourse
-      PGDATA: /var/lib/postgresql/17/docker
+      PGDATA: /var/lib/postgresql/16/docker
+
+# old style 2-container data
+#  db:
+#    image: local_discourse/data
+#    volumes:
+#      - ./shared/test-pg:/shared
+#    environment:
+#      DISCOURSE_DB_PASSWORD: SOME_SECRET
+#      CREATE_DB_ON_BOOT: 1
+
   web:
     image: local_discourse/web_only
     links:
