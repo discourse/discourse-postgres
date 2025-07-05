@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-if ! [ -z "$DB_USER" ] || ! [ "$DB_USER" = "$POSTGRES_USER" ]; then
+if [ ! -z "$DB_USER" ] && [ ! "$DB_USER" = "$POSTGRES_USER" ]; then
     psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
 CREATE USER $DB_USER;
 GRANT ALL PRIVILEGES ON DATABASE $POSTGRES_DB TO $DB_USER;
