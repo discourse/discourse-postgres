@@ -5,7 +5,6 @@ find /var/lib/postgresql -name PG_VERSION -maxdepth 3 -type f | grep . > /dev/nu
 
 source /usr/local/bin/docker-entrypoint.sh
 docker_setup_env
-docker_create_db_directories
 
 # assume we're upgrading from latest found pg major dir
 # and the entire cluster mount is expected to go to /var/lib/postgresql
@@ -26,6 +25,7 @@ if [ "${PG_MAJOR_NEW}" -lt "$PG_MAJOR_OLD" ]; then
     exit 1
 fi
 
+docker_create_db_directories
 export PGDATAOLD=$(echo $PGDATAOLD_AND_PG_MAJOR_OLD | awk '{print $1}')
 export PGDATANEW=${PGDATA}
 export PGBINOLD=/usr/lib/postgresql/${PG_MAJOR_OLD}/bin
