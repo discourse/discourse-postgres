@@ -4,7 +4,7 @@ FROM pgvector/pgvector:pg${VERSION}
 
 RUN apt-get update && \
 	apt-mark hold locales && \
-	apt-get install -y --no-install-recommends pwgen \
+	apt-get install -y --no-install-recommends pwgen && \
 	apt-get autoremove -y && \
 	apt-mark unhold locales && \
 	rm -rf /var/lib/apt/lists/*
