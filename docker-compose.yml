@@ -18,7 +18,6 @@ services:
       - ./shared/test-pg:/var/lib/postgresql
       - ./shared/test-pg/data:/var/lib/postgresql/data
     environment:
-      POSTGRES_USER: postgres
       POSTGRES_PASSWORD: SOME_SUPER_SECRET
       POSTGRES_USER_NOT_SUPER: discourse
       POSTGRES_PASSWORD_NOT_SUPER: SOME_SECRET
