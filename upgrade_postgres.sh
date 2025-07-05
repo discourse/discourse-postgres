@@ -41,7 +41,7 @@ fi
 
 echo Upgrading PostgreSQL from version ${PG_MAJOR_OLD} to ${PG_MAJOR_NEW}
 free_disk=$(df -P -B1 /var/lib/postgresql | tail -n 1 | awk '{print $4}')
-required=$(($(du -sb /var/lib/postgresql/${PG_MAJOR_OLD}/${PG_MAJOR_OLD_CLUSTER} | awk '{print $1}') * 2))
+required=$(($(du -sb ${PGDATAOLD} | awk '{print $1}') * 2))
 
 if [ "$free_disk" -lt "$required" ]; then
   echo
