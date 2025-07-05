@@ -11,17 +11,22 @@ docker_create_db_directories
 # and the entire cluster mount is expected to go to /var/lib/postgresql
 # per https://github.com/docker-library/postgres/pull/1259
 
-PG_MAJOR_OLD=$(find /var/lib/postgresql -name PG_VERSION -maxdepth 3 -type f -exec cat {} \; | sort -n | tail -n 1)
+# Of the form `{PGDATAOLD} {PG_MAJOR_OLD}` - saves the newest 'old' version found
+PGDATAOLD_AND_PG_MAJOR_OLD=$(find /var/lib/postgresql -name PG_VERSION -maxdepth 3 -type f | xargs -I % sh -c 'printf "% "; cat %' | sort -nk2,2 | tail -n1)
+PG_MAJOR_OLD=$(printf $PGDATAOLD_AND_PG_MAJOR_OLD | awk '{print $2}')
 PG_MAJOR_NEW=$(postgres --version | sed -rn 's/^[^0-9]*+([0-9]++).*/\1/p')
 
 # exit if pg major cluster exists
 if [ "${PG_MAJOR_NEW}" = "$PG_MAJOR_OLD" ]; then
     exit 0
 fi
+# exit with warning if pg major cluster exceeds current version
+if [ "${PG_MAJOR_NEW}" -lt "$PG_MAJOR_OLD" ]; then
+    echo "WARNING: old DB is newer postgres version, current DB is ${PG_MAJOR_NEW}, old version is ${PG_MAJOR_OLD}"
+    exit 1
+fi
 
-# data dir/cluster name is /docker in newer versions, but data elsewhere. figure out /var/lib/postgres/{version}/{cluster}/*
-PG_MAJOR_OLD_CLUSTER=$(ls -1 /var/lib/postgresql/${PG_MAJOR_OLD} | tail -n 1)
-export PGDATAOLD=/var/lib/postgresql/${PG_MAJOR_OLD}/${PG_MAJOR_OLD_CLUSTER}
+export PGDATAOLD=$(printf $PGDATAOLD_AND_PG_MAJOR_OLD | awk '{print $1}')
 export PGDATANEW=${PGDATA}
 export PGBINOLD=/usr/lib/postgresql/${PG_MAJOR_OLD}/bin
 export PGBINNEW=/usr/lib/postgresql/${PG_MAJOR_NEW}/bin
