@@ -22,7 +22,7 @@ if [ "${PG_MAJOR_NEW}" = "$PG_MAJOR_OLD" ]; then
 fi
 # exit with warning if pg major cluster exceeds current version
 if [ "${PG_MAJOR_NEW}" -lt "$PG_MAJOR_OLD" ]; then
-    echo "WARNING: old DB is newer postgres version, current DB is ${PG_MAJOR_NEW}, old version is ${PG_MAJOR_OLD}"
+    echo "WARNING: old DB is newer postgres version, current DB is ${PG_MAJOR_NEW}, old version is ${PG_MAJOR_OLD}!"
     exit 1
 fi
 
