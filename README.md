@@ -35,3 +35,6 @@ also theres everything done in create_db file:
 bootstrap_db.sh creates the extensions to the db, and adds the owning (non super) user with:
 POSTGRES_USER_NOT_SUPER
 POSTGRES_PASSWORD_NOT_SUPER
+
+POSTGRES_USER defaults to postgres.
+POSTGRES_PASSWORD on the other hand needs to be set currently, even though we're connecting on a separate user.
