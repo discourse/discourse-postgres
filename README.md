@@ -45,3 +45,10 @@ DB_PASSWORD needs to be set
 The user and password gets created/set on every build in base Discourse image, whereas on postgres images, they do not.
 
 POSTGRES_DB defaults to discourse
+
+Config defaults to the same in postgres
+
+## TODO
+
+### Figure out db lang?
+
