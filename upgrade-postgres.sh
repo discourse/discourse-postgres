@@ -1,7 +1,7 @@
 #!/bin/bash
 set -Eeuo pipefail
 # exit early if no data dirs exist
-find /var/lib/postgresql -name PG_VERSION -maxdepth 3 -type f | grep . > /dev/null || exit 0
+find /var/lib/postgresql -maxdepth 3 -type f -name PG_VERSION | grep . > /dev/null || exit 0
 
 source /usr/local/bin/docker-entrypoint.sh
 docker_setup_env
