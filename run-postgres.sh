@@ -10,6 +10,12 @@ if [ -z "$POSTGRES_PASSWORD" ]; then
     export POSTGRES_PASSWORD=$(pwgen -cnys 20 1)
 fi
 
+# Generate locales
+if [ ! -z "$LANG" ] && [ "$LANG" != "en_US.utf8" ]; then
+    sed -i "s/^# $LANG/$LANG/" /etc/locale.gen
+    locale-gen && update-locale
+fi
+
 # Configure postgresql.conf file on
 # * existing database (same version)
 # * existing database (upgrading version)

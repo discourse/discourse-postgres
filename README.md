@@ -48,7 +48,9 @@ POSTGRES_DB defaults to discourse
 
 Config defaults to the same in postgres
 
+runs locale-gen and update-locale on boot.
+
 ## TODO
 
-### Figure out db lang?
-
+### Do we need to update encoding?
+utf8 seems to be the default these days. Perhaps was used to update some really ancient versions.
