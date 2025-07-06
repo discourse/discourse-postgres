@@ -16,9 +16,9 @@ RUN apt-get update && \
 	apt-mark unhold locales && \
 	rm -rf /var/lib/apt/lists/*
 
-ADD upgrade_postgres.sh /usr/local/bin/upgrade_postgres.sh
-ADD run_postgres.sh /usr/local/bin/run_postgres.sh
-ADD bootstrap_db.sh /docker-entrypoint-initdb.d/bootstrap_db.sh
+ADD upgrade-postgres.sh /usr/local/bin/upgrade-postgres.sh
+ADD run-postgres.sh /usr/local/bin/run-postgres.sh
+ADD bootstrap-db.sh /docker-entrypoint-initdb.d/bootstrap-db.sh
 ENV PGDATA=/var/lib/postgresql/${VERSION}/docker \
   DB_USER=discourse \
   POSTGRES_DB=discourse \

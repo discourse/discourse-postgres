@@ -9,5 +9,5 @@ fi
 if [ -z "$POSTGRES_PASSWORD" ]; then
     export POSTGRES_PASSWORD=$(pwgen -cnys 20 1)
 fi
-upgrade_postgres.sh "$@"
+upgrade-postgres.sh "$@"
 exec docker-entrypoint.sh "$@"
