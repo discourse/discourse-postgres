@@ -56,6 +56,7 @@ if [ "$free_disk" -lt "$required" ]; then
 fi
 
 docker_init_database_dir
+/docker-entrypoint-initdb.d/configure-postgres.sh
 pg_setup_hba_conf "$@"
 cd /var/run/postgresql
 SUCCESS=true

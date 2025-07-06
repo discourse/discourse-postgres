@@ -19,14 +19,15 @@ RUN apt-get update && \
 ADD upgrade-postgres.sh /usr/local/bin/upgrade-postgres.sh
 ADD run-postgres.sh /usr/local/bin/run-postgres.sh
 ADD bootstrap-db.sh /docker-entrypoint-initdb.d/bootstrap-db.sh
+ADD configure-postgres.sh /docker-entrypoint-initdb.d/configure-postgres.sh
 ENV PGDATA=/var/lib/postgresql/${VERSION}/docker \
   DB_USER=discourse \
   POSTGRES_DB=discourse \
-  POSTGRES_INITDB_ARGS="--set synchronous_commit=${DB_SYNCHRONOUS_COMMIT} \
-  --set shared_buffers=${DB_SHARED_BUFFERS} \
-  --set work_mem=${DB_WORK_MEM} \
-  --set default_text_search_config=${DB_DEFAULT_TEXT_SEARCH_CONFIG} \
-  --set logging_collector=${DB_LOGGING_COLLECTOR} \
-  --set log_min_duration_statement=${DB_LOG_MIN_DURATION_STATEMENT}"
+  DB_SYNCHRONOUS_COMMIT=${DB_SYNCHRONOUS_COMMIT} \
+  DB_SHARED_BUFFERS=${DB_SHARED_BUFFERS} \
+  DB_WORK_MEM=${DB_WORK_MEM} \
+  DB_DEFAULT_TEXT_SEARCH_CONFIG=${DB_DEFAULT_TEXT_SEARCH_CONFIG} \
+  DB_LOGGING_COLLECTOR=${DB_LOGGING_COLLECTOR} \
+  DB_LOG_MIN_DURATION_STATEMENT=${DB_LOG_MIN_DURATION_STATEMENT}
 ENTRYPOINT ["run_postgres.sh"]
 CMD ["postgres"]
