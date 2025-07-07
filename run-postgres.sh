@@ -2,7 +2,7 @@
 set -Ee
 
 if [ -z "$DB_PASSWORD" ]; then
-    echo "DB_PASSWORD not set."
+    echo "Error: DB_PASSWORD not set."
     exit 1
 fi
 # Generate a password if one is not provided
