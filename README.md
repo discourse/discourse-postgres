@@ -50,14 +50,15 @@ New data dirs will be initialized separately.
 ## Env vars
 
 This updates a few base env vars:
-`POSTGRES_DB` defaults to discourse
-`PGDATA` defaults to `/var/lib/postgresql/${VERSION}/docker` where `${VERSION}` is the postgres version, eg, `15`. This will be default behavior starting in postgres 18.
+* `POSTGRES_DB` defaults to discourse
+* `PGDATA` defaults to `/var/lib/postgresql/${VERSION}/docker` where `${VERSION}` is the postgres version, eg, `15`. This will be default behavior starting in postgres 18.
+
 Unlike the base image, `POSTGRES_PASSWORD` can be left unset, and a random password will be generated for it.
 
 In addition to the base postgres image env vars, this image exposes:
 
-`DB_USER`: the user (not superuser) account for the DB. Default `discourse`.
-`DB_PASSWORD`: the password for the user account. The image will not start if this is blank.
+* `DB_USER`: the user (not superuser) account for the DB. Default `discourse`.
+* `DB_PASSWORD`: the password for the user account. The image will not start if this is blank.
 
 And exposes some additional configuration options for postgres:
 
