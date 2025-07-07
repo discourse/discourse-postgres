@@ -23,4 +23,4 @@ jobs:
       - name: build images
         run: |
           docker login --username ${{ vars.DOCKERHUB_USERNAME }} --password ${{ secrets.DOCKER_PASSWORD }}
-          docker buildx build --push --platform linux/amd64,linux/arm64 --tag featheredtoast/discourse-postgres:pg${{ matrix.version }} --build-arg VERSION=${{ matrix.version }} .
+          docker buildx build --push --platform linux/amd64,linux/arm64 --tag featheredtoast/discourse-db:pg${{ matrix.version }} --build-arg VERSION=${{ matrix.version }} .
