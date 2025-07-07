@@ -13,7 +13,7 @@ services:
   # migrate to separated postgres data
   #https://github.com/docker-library/postgres/pull/1259
   db:
-    image: featheredtoast/discourse-db
+    image: featheredtoast/discourse-db:pg15
     volumes:
       - ./shared/test-pg:/var/lib/postgresql
       - ./shared/test-pg/data:/var/lib/postgresql/data

@@ -37,6 +37,10 @@ Keeping separate dirs in separate versions means that old data is not modified o
 
 This image adds the `hstore`, `pgtrgm`, and `vector` extensions to the created database automatically.
 
+### Language/Locales
+
+Base postgres image expects lang to be built into the image, but this image also accepts LANG of the form `de_DE.UTF-8`, and updates lang dynamically for ease of use.
+
 ## Migrating
 
 Migrating from Discourse single or two container involves moving/renaming the `/shared/postgres_data` folder to `/shared/{version}/docker`
@@ -101,7 +105,7 @@ Superuser concerns: default install superuser installs the postgres user as the 
 For upgrading, `POSTGRES_USER` should remain unset and inherit the default `postgres`.
 This image exposes env vars for `DB_USER` and `DB_PASSWORD` to install as non-superuser. By default `DB_USER` is `discourse`.
 
-initdb by default uses the current username. Usually this is run as postgres, so postgres becomes the default superuser. This is not the case with docker image... the POSTGRES_USER is.
+initdb by default uses the current username. Usually this is run as postgres, so postgres becomes the default superuser. This is not the case with docker image... the `POSTGRES_USER` is. For this reason it's good to leave this as default.
 
 see also https://github.com/docker-library/postgres/issues/175
 
