@@ -26,7 +26,8 @@ jobs:
       - name: build images
         run: |
           docker login --username ${{ vars.DOCKERHUB_USERNAME }} --password ${{ secrets.DOCKER_PASSWORD }}
-          docker buildx build --push --platform linux/amd64,linux/arm64 --tag ${{ env.DOCKER_REPO }}:pg${{ matrix.version }} --build-arg VERSION=${{ matrix.version }} .
+          docker buildx build --platform linux/amd64,linux/arm64 --tag ${{ env.DOCKER_REPO }}:pg${{ matrix.version }} --build-arg VERSION=${{ matrix.version }} .
+          docker push ${{ env.DOCKER_REPO }}:pg${{ matrix.version }}
           if [ "${{ matrix.version }}" = "${{ env.LATEST }}" ]; then
             docker tag ${{ env.DOCKER_REPO }}:pg${{ matrix.version }} ${{ env.DOCKER_REPO }}:latest
             docker push ${{ env.DOCKER_REPO }}:latest
