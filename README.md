@@ -37,6 +37,8 @@ Keeping separate dirs in separate versions means that old data is not modified o
 
 This image adds the `hstore`, `pgtrgm`, and `vector` extensions to the created database automatically.
 
+This happens by default. If you'd like to use this DB for only non-superuser + auto DB upgrade features, you can disable this by setting `SKIP_EXTENSIONS=1`
+
 ### Language/Locales
 
 Base postgres image expects lang to be built into the image, but this image also accepts LANG of the form `de_DE.UTF-8`, and updates lang dynamically for ease of use.
