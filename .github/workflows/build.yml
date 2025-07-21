@@ -5,6 +5,8 @@ on:
       - "docker-compose.yml"
       - "**.md"
       - "**.gitignore"
+  schedule:
+    - cron: "0 0 1 * *"
 
 env:
   BUILDKIT_PROGRESS: plain
