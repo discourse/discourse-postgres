@@ -1,4 +1,4 @@
-# Discourse DB
+# Discourse Postgres
 
 Managing a postgres cluster for discourse
 
