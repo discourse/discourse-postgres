@@ -43,11 +43,11 @@ This happens by default. If you'd like to use this DB for only non-superuser + a
 
 Base postgres image expects lang to be built into the image, but this image also accepts LANG of the form `de_DE.UTF-8`, and updates lang dynamically for ease of use.
 
-## Migrating
+## Migrating from postgres.yml, standalone or classic 2 container
 
 Migrating from Discourse single or two container involves moving/renaming the `/shared/postgres_data` folder to `/shared/{version}/docker`
 
-New data dirs will be initialized separately.
+Volume mount changed from `/shared` to `/var/lib/postgresql`
 
 ## Env vars
 
