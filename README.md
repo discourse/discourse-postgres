@@ -13,7 +13,7 @@ Until postgres version 18, it is good to also mount a `/var/lib/postgresql/data`
 Within docker-compose, this can look like:
 ```
   db:
-    image: featheredtoast/discourse-db
+    image: discourse/postgres
     volumes:
       - ./shared/db:/var/lib/postgresql
       - ./shared/db/data:/var/lib/postgresql/data

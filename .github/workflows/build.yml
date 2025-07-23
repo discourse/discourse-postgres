@@ -10,7 +10,7 @@ on:
 
 env:
   BUILDKIT_PROGRESS: plain
-  DOCKER_REPO: featheredtoast/discourse-db
+  DOCKER_REPO: discourse/postgres
 
 jobs:
   push:
