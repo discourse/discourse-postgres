@@ -21,6 +21,7 @@ ADD run-postgres.sh /usr/local/bin/run-postgres.sh
 ADD bootstrap-db.sh /docker-entrypoint-initdb.d/bootstrap-db.sh
 ADD configure-postgres.sh /docker-entrypoint-initdb.d/configure-postgres.sh
 ENV PGDATA=/var/lib/postgresql/${VERSION}/docker \
+  POSTGRES_USER=postgres \
   DB_USER=discourse \
   POSTGRES_DB=discourse \
   DB_SYNCHRONOUS_COMMIT=${DB_SYNCHRONOUS_COMMIT} \
