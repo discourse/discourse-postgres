@@ -65,6 +65,10 @@ rm -fr ${PGDATAOLD}/postmaster.pid
 rm -fr ${PGDATAOLD}/postmaster.opts
 ${PGBINNEW}/pg_upgrade --username="$POSTGRES_USER" || SUCCESS=false
 
+docker_temp_server_start "$@"
+docker_process_init_files /docker-entrypoint-initdb.d/bootstrap-db.sh
+docker_temp_server_stop
+
 if [[ "$SUCCESS" == 'false' ]]; then
   echo -------------------------------------------------------------------------------------
   echo UPGRADE OF POSTGRES FAILED
