@@ -1,4 +1,4 @@
-ARG VERSION=17
+ARG VERSION=18
 
 FROM pgvector/pgvector:pg${VERSION}
 ARG VERSION

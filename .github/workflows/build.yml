@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        version: [13, 14, 15, 16, 17]
+        version: [13, 14, 15, 16, 17, 18]
     env:
       LATEST: 15
     steps:
