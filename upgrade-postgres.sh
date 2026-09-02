@@ -63,11 +63,20 @@ SUCCESS=true
 
 rm -fr ${PGDATAOLD}/postmaster.pid
 rm -fr ${PGDATAOLD}/postmaster.opts
+
+if [[ "$PG_MAJOR_NEW" -eq 18 ]]; then
+  pg_checksums --disable -D ${PGDATANEW}
+fi
+
 ${PGBINNEW}/pg_upgrade --username="$POSTGRES_USER" || SUCCESS=false
 
 docker_temp_server_start "$@"
 docker_process_init_files /docker-entrypoint-initdb.d/bootstrap-db.sh
 docker_temp_server_stop
+
+if [[ "$PG_MAJOR_NEW" -eq 18 ]]; then
+  pg_checksums --enable -D ${PGDATANEW}
+fi
 
 if [[ "$SUCCESS" == 'false' ]]; then
   echo -------------------------------------------------------------------------------------
