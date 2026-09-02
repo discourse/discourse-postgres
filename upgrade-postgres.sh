@@ -86,5 +86,5 @@ if [[ "$SUCCESS" == 'false' ]]; then
   exit 1
 fi
 
-echo "PostgreSQL version ${PG_MAJOR_OLD} upgrade complete"
+echo "PostgreSQL version ${PG_MAJOR_OLD} to ${PG_MAJOR_NEW} upgrade complete"
 exit 0
